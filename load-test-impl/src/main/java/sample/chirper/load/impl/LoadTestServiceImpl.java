@@ -5,6 +5,7 @@ package sample.chirper.load.impl;
 
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -12,11 +13,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
-import play.Logger;
-import play.Logger.ALogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sample.chirper.activity.api.ActivityStreamService;
 import sample.chirper.chirp.api.Chirp;
 import sample.chirper.chirp.api.ChirpService;
@@ -25,7 +25,6 @@ import sample.chirper.friend.api.FriendService;
 import sample.chirper.friend.api.User;
 import sample.chirper.load.api.LoadTestService;
 import sample.chirper.load.api.TestParams;
-import scala.concurrent.duration.FiniteDuration;
 
 import akka.japi.Pair;
 import akka.stream.Materializer;
@@ -38,7 +37,7 @@ public class LoadTestServiceImpl implements LoadTestService {
   private final ActivityStreamService activityService;
   private final ChirpService chirpService;
   private final Materializer materializer;
-  private final ALogger log = Logger.of(getClass());
+  private static final Logger log = LoggerFactory.getLogger(LoadTestServiceImpl.class);
 
   // to create "unique" user ids we prefix them with this, convenient
   // to not have overlapping user ids when running in dev mode
@@ -114,7 +113,7 @@ public class LoadTestServiceImpl implements LoadTestService {
     Source<String, ?> writes = Source.from(Arrays.asList(createdUsers, addedFriends, postedChirps))
         .flatMapConcat(s -> s);
 
-    final FiniteDuration interval = FiniteDuration.create(5, TimeUnit.SECONDS);
+    final Duration interval = Duration.ofSeconds(5);
     Source<String, ?> clientsThroughput = Source.tick(interval, interval, "tick")
         .scan(new Throughput(System.nanoTime(), System.nanoTime(), 0, 0), (t, tick) -> {
           long now = System.nanoTime();
@@ -148,7 +147,7 @@ public class LoadTestServiceImpl implements LoadTestService {
     return Flow.of(NotUsed.class)
       .scan(0, (count, elem) -> count + 1)
       .drop(1)
-      .groupedWithin(1000, FiniteDuration.create(1, TimeUnit.SECONDS))
+      .groupedWithin(1000, Duration.ofSeconds(1))
       .map(list -> list.get(list.size() - 1))
       .map(c -> title + ": " + c);
   }

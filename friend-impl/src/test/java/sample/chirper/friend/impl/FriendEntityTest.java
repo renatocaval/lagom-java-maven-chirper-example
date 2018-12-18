@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collections;
 import java.util.Optional;
 
+import akka.testkit.javadsl.TestKit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,7 +20,6 @@ import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver.Outcome;
 
 import akka.Done;
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
 import sample.chirper.friend.api.User;
 import sample.chirper.friend.impl.FriendCommand.AddFriend;
 import sample.chirper.friend.impl.FriendCommand.CreateUser;
@@ -40,7 +40,7 @@ public class FriendEntityTest {
 
   @AfterClass
   public static void teardown() {
-    JavaTestKit.shutdownActorSystem(system);
+    TestKit.shutdownActorSystem(system);
     system = null;
   }
 
