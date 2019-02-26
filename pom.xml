@@ -35,6 +35,8 @@
                             <arg>-parameters</arg>
                             <arg>-Xlint:all,-options,-path</arg>
                             <arg>-Werror</arg>
+                            <arg>-Xlint:unchecked</arg>
+                            <arg>-Xlint:deprecation</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>
@@ -181,7 +183,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lagom.version>1.5.0-RC1</lagom.version>
+        <lagom.version>1.5.0-RC2</lagom.version>
         <scala.binary.version>2.12</scala.binary.version>
     </properties>
 
